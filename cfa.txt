@@ -1,0 +1,4 @@
+FA: ts_interference,ant_conflict_rt_effect,ddt_total_k
+FB: persistance,scorev,func_total
+FC: scap_dprime,smnm_manip_dprime,vmnm_manip_dprime
+FD: dysfunc_total,bis_factor2_bi,scorei
