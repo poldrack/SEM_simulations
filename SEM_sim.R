@@ -8,7 +8,7 @@ simnum=1
 library(lavaan)
 library(mice)
 library(gtools)
-
+library(Amelia)
 c0=read.table('set1.csv',sep=',',header=TRUE,na.strings=c('NA','.'))
 
 c1=read.table('set2.csv',sep=',',header=TRUE,na.strings=c('NA','.'))
