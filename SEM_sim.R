@@ -1,10 +1,10 @@
 # use simsem to generate simulated data
 args=commandArgs(trailingOnly=TRUE)
-#samp_prop=as.numeric(args[1])
-#simnum=as.numeric(args[2])
+samp_prop=as.numeric(args[1])
+simnum=as.numeric(args[2])
 
-samp_prop=0.25
-simnum=1
+#samp_prop=0.25
+#simnum=1
 
 library(lavaan)
 library(mice)
@@ -94,7 +94,7 @@ nsamp=400
       }
     }
     # change impute to FALSE to see effects of no imputation
-    cfaout=runcfa(dsim,cfa_model,cfa_model2,impute=TRUE)
+    cfaout=runcfa(dsim,cfa_model,cfa_model2,impute=FALSE)
 
 output=c(samp_prop,simnum,cfaout)
 write.table(output,file=sprintf('outputs/sim_%0.3f_%d.txt',samp_prop,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
