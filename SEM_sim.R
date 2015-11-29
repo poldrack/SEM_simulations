@@ -42,7 +42,9 @@ FC =~ reward_dependence + chapsoc_total + chapphy_total'
 
 fit <- cfa(cfa_model, data =data2)
 
-cfa_model2='FA =~ ssp_totalraw + vr2dr_totalraw + mr_totalraw + bis_factor2_bi + chaphypo_total + bipollarii_sumscore + scorei + vmnm_maint_dprime + vmnm_manip_dprime + vcap_dprime + reward_dependence + chapsoc_total + chapphy_total'
+cfa_model2='FA =~ ssp_totalraw + vr2dr_totalraw + mr_totalraw + vmnm_maint_dprime + vmnm_manip_dprime 
+FB =~ vcap_dprime + bis_factor2_bi + chaphypo_total + bipollarii_sumscore + scorei
+FC =~ reward_dependence + chapsoc_total + chapphy_total'
 fit2 <- cfa(cfa_model2, data =data2)
 anova(fit,fit2)
 
