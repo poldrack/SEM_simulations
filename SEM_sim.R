@@ -3,7 +3,9 @@ args=commandArgs(trailingOnly=TRUE)
 samp_prop=as.numeric(args[1])
 simnum=as.numeric(args[2])
 imp=as.numeric(args[3])
+nsamp=as.numeric(args[4])
 
+if (is.na(nsamp)) {nsamp=400}
 
 if (is.na(samp_prop)) {
    cat('no command line args given - using canned values\n')
@@ -83,7 +85,6 @@ runcfa = function(data,model,model2,impute=0,missing='fiml',ridge=1e-05,estimato
 
 # generate samples for missing data analysis
 
-nsamp=400
 
 
 
@@ -113,4 +114,4 @@ nsamp=400
 output=c(samp_prop,simnum,cfaout)
 if (imp==1) {outdir='outputs_amelia'} else {outdir='outputs_fiml'}
 
-write.table(output,file=sprintf('%s/sim_%0.3f_%d.txt',outdir,samp_prop,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
+write.table(output,file=sprintf('%s/sim_%0.3f_%d_%d.txt',outdir,samp_prop,nsamp,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
