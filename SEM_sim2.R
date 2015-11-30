@@ -9,7 +9,7 @@ if (is.na(nsamp)) {nsamp=400}
 
 if (is.na(samp_prop)) {
    cat('no command line args given - using canned values\n')
-   samp_prop=0.25
+   samp_prop=0.2
    simnum=1
    imp=1
 }
@@ -82,11 +82,11 @@ FI =~ bart_meanadjustedpumps + cpt_fa + smnm_maint_dprime + vmnm_maint_dprime
 
 fit2 <- cfa(cfa_model2, data =data2)
 
-runcfa = function(data,model,model2,impute=0,missing='fiml',ridge=1e-05,estimator='MLR',scale=TRUE) {
+runcfa = function(data,model,model2,impute=0,ameliaridge=0.05,missing='fiml',ridge=1e-05,estimator='MLR',scale=TRUE) {
   out=tryCatch(
     {
       if (impute==1) {
-        am=amelia(data,m=1)
+        am=amelia(data,m=1,empri=ameliaridge*nrow(data))
         data=am$imputations[[1]]
       }
       if (scale) {
