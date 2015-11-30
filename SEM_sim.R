@@ -2,14 +2,20 @@
 args=commandArgs(trailingOnly=TRUE)
 samp_prop=as.numeric(args[1])
 simnum=as.numeric(args[2])
+imp=as.numeric(args[3])
 
-#samp_prop=0.25
-#simnum=1
+
+if (is.na(samp_prop)) {
+   cat('no command line args given - using canned values\n')
+   samp_prop=0.25
+   simnum=1
+   imp=1
+}
 
 library(lavaan)
-library(mice)
 library(gtools)
 library(Amelia)
+library(nonnest2)
 
 c0=read.table('set1.csv',sep=',',header=TRUE,na.strings=c('NA','.'))
 
@@ -49,10 +55,10 @@ FC =~ reward_dependence + chapsoc_total + chapphy_total'
 fit2 <- cfa(cfa_model2, data =data2)
 anova(fit,fit2)
 
-runcfa = function(data,model,model2,impute=FALSE,missing='fiml',ridge=0.001,estimator='MLR',scale=TRUE) {
+runcfa = function(data,model,model2,impute=0,missing='fiml',ridge=1e-05,estimator='MLR',scale=TRUE) {
   out=tryCatch(
     {
-      if (impute) {
+      if (impute==1) {
         am=amelia(data,m=1)
         data=am$imputations[[1]]
       }
@@ -63,12 +69,13 @@ runcfa = function(data,model,model2,impute=FALSE,missing='fiml',ridge=0.001,esti
       f2=cfa(model2,data=data,ridge=ridge,missing=missing,estimator=estimator,zero.add=c(0.1,0.1))
       meas=fitmeasures(f,fit.measures='all')
       meas2=fitmeasures(f2,fit.measures='all')
-      a=anova(f,f2)
+      v=vuongtest(f,f2)
       
-      c(meas['rmsea'],meas2['bic2']-meas['bic2'],a['Chisq diff'][2,1],a["Pr(>Chisq)"][2,1])
+      c(meas['rmsea'],meas['bic2'],meas2['bic2'],v$p_LRT$A)
     },
     error=function(cond) {
     			 cat('something went wrong\n')
+			
 			 return(c(NA,NA,NA,NA))
 			 }
   )
@@ -93,11 +100,17 @@ nsamp=400
       idx=1
       for (j in 1:nsamp_sub) {
         dsim[j,combs[idx,]]=NA
-        if (idx>=nrow(combs)) {idx=1} else {idx=idx+1}
+        if (idx>=nrow(combs)) {
+	   idx=1
+    	   combs=combs[sample(nrow(combs)),]
+
+	} else {idx=idx+1}
       }
     }
     # change impute to FALSE to see effects of no imputation
-    cfaout=runcfa(dsim,cfa_model,cfa_model2,impute=FALSE)
+    cfaout=runcfa(dsim,cfa_model,cfa_model2,impute=imp)
 
 output=c(samp_prop,simnum,cfaout)
-write.table(output,file=sprintf('outputs/sim_%0.3f_%d.txt',samp_prop,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
+if (imp==1) {outdir='outputs_amelia'} else {outdir='outputs_fiml'}
+
+write.table(output,file=sprintf('%s/sim_%0.3f_%d.txt',outdir,samp_prop,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
