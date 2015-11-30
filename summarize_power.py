@@ -10,37 +10,34 @@ import matplotlib.pyplot as plt
 # amelia results
 basedir='/Users/poldrack/code/SEM_simulations/outputs_amelia'
 
-levels=[0.5,0.25,0.2]
-
+samps=[100,200,300,400]
 try:
     del data
 except:
     pass
 
-for l in levels:
-    files=glob.glob(os.path.join(basedir,'sim_%0.3f_*txt'%l))
+for l in samps:
+    files=glob.glob(os.path.join(basedir,'sim_0.200_%d_*txt'%l))
     files.sort()
     print '%0.3f: found %d files'%(l,len(files))
     for f in files:
         d=numpy.genfromtxt(f)
         try:
-            data=numpy.vstack((data,d))
+            data=numpy.vstack((data,numpy.hstack((d,l))))
         except:
-            data=d
+            data=numpy.hstack((d,l))
 
 
 # outputs: RMSEA, BIC diff, x2diff, pval
-RMSEA_amelia=numpy.zeros(len(levels))
-BICdiff_amelia=numpy.zeros(len(levels))
-chi2diff_amelia=numpy.zeros(len(levels))
-sigp_amelia=numpy.zeros(len(levels))
-pgood_amelia=numpy.zeros(len(levels))
-pnonzero_amelia=numpy.zeros(len(levels))
+RMSEA_amelia=numpy.zeros(len(samps))
+sigp_amelia=numpy.zeros(len(samps))
+pgood_amelia=numpy.zeros(len(samps))
+pnonzero_amelia=numpy.zeros(len(samps))
 
 sumall=numpy.sum(data,1)
-for i in range(len(levels)):
-    l=levels[i]
-    s=data[:,0]==l
+for i in range(len(samps)):
+    l=samps[i]
+    s=data[:,6]==l
     n=~numpy.isnan(sumall)
     goods=s*n
     if numpy.sum(goods)==0:
@@ -49,52 +46,47 @@ for i in range(len(levels)):
     pgood_amelia[i]=numpy.sum(goods)/numpy.sum(s)
     pnonzero_amelia[i]=numpy.sum(data[goods,2]>0.0)/numpy.sum(goods)
     RMSEA_amelia[i]=numpy.median(data[goods,2])
-    BICdiff_amelia[i]=numpy.median(data[goods,3])
-    chi2diff_amelia[i]=numpy.median(data[goods,4])
     sigp_amelia[i]=numpy.mean(data[goods,5]<0.05)
 
 
 # FIML
 basedir='/Users/poldrack/code/SEM_simulations/outputs_fiml'
 
-levels=[1.0,0.5,0.25,0.2]
-
 try:
     del data
 except:
     pass
 
-for l in levels:
-    files=glob.glob(os.path.join(basedir,'sim_%0.3f_*txt'%l))
+for l in samps:
+    files=glob.glob(os.path.join(basedir,'sim_0.200_%d_*txt'%l))
     files.sort()
     print '%0.3f: found %d files'%(l,len(files))
     for f in files:
         d=numpy.genfromtxt(f)
         try:
-            data=numpy.vstack((data,d))
+            data=numpy.vstack((data,numpy.hstack((d,l))))
         except:
-            data=d
+            data=numpy.hstack((d,l))
 
 
 # outputs: RMSEA, BIC diff, x2diff, pval
-RMSEA=numpy.zeros(len(levels))
-BICdiff=numpy.zeros(len(levels))
-chi2diff=numpy.zeros(len(levels))
-sigp=numpy.zeros(len(levels))
-pgood=numpy.zeros(len(levels))
-pnonzero=numpy.zeros(len(levels))
+RMSEA=numpy.zeros(len(samps))
+sigp=numpy.zeros(len(samps))
+pgood=numpy.zeros(len(samps))
+pnonzero=numpy.zeros(len(samps))
 sumall=numpy.sum(data,1)
-for i in range(len(levels)):
-    l=levels[i]
-    s=data[:,0]==l
+for i in range(len(samps)):
+    l=samps[i]
+    s=data[:,6]==l
     n=~numpy.isnan(sumall)
     goods=s*n
     pgood[i]=numpy.sum(goods)/numpy.sum(s)
     pnonzero[i]=numpy.sum(data[goods,2]>0.0)/numpy.sum(goods)
     RMSEA[i]=numpy.median(data[goods,2])
-    BICdiff[i]=numpy.median(data[goods,3])
-    chi2diff[i]=numpy.median(data[goods,4])
     sigp[i]=numpy.mean(data[goods,5]<0.05)
+
+
+asdf
 
 # make figures
 plt.figure(figsize=(8,6))
