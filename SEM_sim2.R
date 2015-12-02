@@ -5,7 +5,7 @@ simnum=as.numeric(args[2])
 imp=as.numeric(args[3])
 nsamp=as.numeric(args[4])
 
-if (is.na(nsamp)) {nsamp=400}
+if (is.na(nsamp)) {nsamp=600}
 
 if (is.na(samp_prop)) {
    cat('no command line args given - using canned values\n')
@@ -82,7 +82,7 @@ FI =~ bart_meanadjustedpumps + cpt_fa + smnm_maint_dprime + vmnm_maint_dprime
 
 fit2 <- cfa(cfa_model2, data =data2)
 
-runcfa = function(data,model,model2,impute=0,ameliaridge=0.05,missing='fiml',ridge=1e-05,estimator='MLR',scale=TRUE) {
+runcfa = function(data,model,model2,impute=0,ameliaridge=0.05,missing='fiml',ridge=0.1,scale=TRUE) {
   out=tryCatch(
     {
       if (impute==1) {
@@ -92,8 +92,8 @@ runcfa = function(data,model,model2,impute=0,ameliaridge=0.05,missing='fiml',rid
       if (scale) {
         data=as.data.frame(scale(data,center = TRUE,scale = TRUE))
       }
-      f=cfa(model,data=data,ridge=ridge,missing=missing,estimator=estimator,zero.add=c(0.1,0.1))
-      f2=cfa(model2,data=data,ridge=ridge,missing=missing,estimator=estimator,zero.add=c(0.1,0.1))
+      f=cfa(model,data=data,ridge=ridge,missing=missing,zero.add=c(0.1,0.1))
+      f2=cfa(model2,data=data,ridge=ridge,missing=missing,zero.add=c(0.1,0.1))
       meas=fitmeasures(f,fit.measures='all')
       meas2=fitmeasures(f2,fit.measures='all')
       a=anova(f,f2)
