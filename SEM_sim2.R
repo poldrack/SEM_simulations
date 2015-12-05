@@ -9,7 +9,7 @@ if (is.na(nsamp)) {nsamp=600}
 
 if (is.na(samp_prop)) {
    cat('no command line args given - using canned values\n')
-   samp_prop=1.0
+   samp_prop=0.16
    simnum=1
    imp=0
 }
@@ -66,7 +66,9 @@ FG =~ choose_hi_prob_mn + avoid_low_prob_mn
 FH =~ asrs_score + hopkins_globalseverity + bis_factor1_ci + bis_factor2_bi + persistance + bart_meanadjustedpumps
 FI =~ scap_dprime + bart_meanadjustedpumps + cpt_fa + smnm_maint_dprime + vmnm_maint_dprime
 '
-fit <- cfa(cfa_model, data =data2)
+#fit <- cfa(cfa_model, data =data2)
+# semPaths(fit,nCharNodes=0,layout='tree2',rotation=4,sizeMan2 = 1,sizeLat2=3)
+
 
 cfa_model2='FA =~ bis_factor1_ci + bis_factor2_bi + dysfunc_total +  func_total + mpq_score + scorei + persistance + novelty
 FB =~ ssp_totalraw + ds_totalraw + mr_totalraw + voc_totalraw + lns_totalraw + vcap_dprime + vmnm_maint_dprime + vmnm_manip_dprime
@@ -78,7 +80,7 @@ FG =~ choose_hi_prob_mn + avoid_low_prob_mn
 FH =~ asrs_score + hopkins_globalseverity + bis_factor1_ci + bis_factor2_bi + persistance + bart_meanadjustedpumps
 FI =~ bart_meanadjustedpumps + cpt_fa + smnm_maint_dprime + vmnm_maint_dprime 
 '
-fit2 <- cfa(cfa_model2, data =data2)
+#fit2 <- cfa(cfa_model2, data =data2)
 
 cfa_model3='FA =~ bis_factor1_ci + bis_factor2_bi + dysfunc_total +  func_total + mpq_score + scorei + persistance + novelty
 FB =~ ssp_totalraw + ds_totalraw + mr_totalraw + voc_totalraw + lns_totalraw + vcap_dprime + vmnm_maint_dprime 
@@ -94,7 +96,7 @@ FH =~ asrs_score + hopkins_globalseverity + bis_factor1_ci + bis_factor2_bi + pe
 + smnm_maint_dprime + vmnm_maint_dprime 
 '
 
-fit3 <- cfa(cfa_model3, data =data2)
+#fit3 <- cfa(cfa_model3, data =data2)
 
 runcfa = function(data,model,model2,model3,impute=0,ameliaridge=0.05,missing='fiml',ridge=0.1,scale=TRUE) {
   out=tryCatch(
