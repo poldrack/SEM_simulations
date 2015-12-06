@@ -5,7 +5,7 @@ import os,glob
 import numpy
 import seaborn as sns
 import matplotlib.pyplot as plt
-import pandas
+import pandas as pd
 
 # amelia results
 basedir='/corral-repl/utexas/poldracklab/data/SEM_simulations/outputs_fiml'
