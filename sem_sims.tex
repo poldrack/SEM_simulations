@@ -6,6 +6,7 @@
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
+\usepackage{url}
 
 %SetFonts
 
@@ -13,7 +14,7 @@
 
 
 \title{Self-regulation ontology project: Sampling simulations}
-\author{Russell Poldrack}
+\author{Russell Poldrack, with help from Dave Mackinnon and Oscar Gonzales}
 %\date{}							% Activate to display a given date or no date
 
 \begin{document}
@@ -24,86 +25,53 @@ At the kickoff meeting for this project on Nov 23, 2015, there was discussion re
 The original sampling plan was to attempt to enroll a number of MTurk workers to complete the entire battery of tasks (currently estimated at about 70 tasks).  This has the benefit of providing a relatively large number of subjects with substantial coverage of the full battery across ~ 10 sessions, but it also raises practical concerns.  In particular, the rate of attrition to be expected from this procedure is currently unknown, and a  high rate of non-completion of the full battery would raise difficult modeling issues, because the data would be missing not at random.  Dave Mackinnon suggested that it might be more optimal to instead sample a larger number of indviduals on a smaller portion of the battery using random assignment of tests to subjects, so that missing data would be missing completely at random, which allows the use of a much wider and more convenient set of modeling tools.  At the meeting it was decided that simulations were in order to assess this question.
 
 \section{Simulation methods}
-Simulations were based on real data obtained from the UCLA Consortium for Neuropsychiatric Phenomics (CNP).  This dataset consists of data from 1254 subjects across a large number of measures.  We selected a subset of these measures for further examination, including both performance and questionnaire measures relevant to the proposed work.  Initial exploration led to identification of a set of 12 variables (listed in Table \ref{tab:measures}, which were relatively well clustered into four clusters (see Figure \ref{fig:cluster}).  The total sample size for these measures (including only subjects with complete data for all measures) was 1126.
+Simulations were based on real data obtained from the UCLA Consortium for Neuropsychiatric Phenomics (CNP).  This dataset consists of 1254 subjects studied across a large number of measures.  We selected a subset of 36 summary measures for further examination, including both performance and questionnaire measures relevant to the proposed work; The total number of complete cases across these measures was 1093.  
 
-\begin{table}[ht]
-\caption{Description of variables used in CFA model.}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-Factor 1& \\
-\hline
-scorei & Eyesenk Impulsiveness Inventory, Impulsivity Subscale\\
-dysfunc\_total & Dickman, Dysfunctional Impusivity Subscale\\
-bis\_factor2\_bi & Barratt Impulsiveness Scale, Behavioral Impulsivity factor\\
-\hline
-Factor 2& \\
-\hline
-ant\_conflict\_rt\_effect & Attention Networks Task, RT conflict effect\\
-ts\_interference & Task switching interference effect\\
-ddt\_total\_k & Delay Discounting task, mean discount rate\\
-\hline
-Factor 3& \\
-\hline
-vmnm\_manip\_dprime & Verbal WM manipulation, d-prime\\
-scap\_dprime & Spatial working memory capacity \\
-smnm\_manip\_dprime & Spatial WM manipulation, d-prime\\
-\hline
-Factor 4& \\
-\hline
-scorev & Eyesenk Impulsiveness Inventory, Venturesomeness Subscale\\
-dysfunc\_total & Dickman, Functional Impusivity Subscale\\
-persistence & TCI Persistence subscale\\
-\hline
-\end{tabular}
-\end{center}
-\label{tab:measures}
-\end{table}%
+The data were first submitted to exploratory factor analysis in order to identify the veridical factor structure for the dataset.  There was no clear answer for the optimal number of factors.  Parallel analysis (using fa.parallel() in the R psych package) suggested that the optimal number of factors was 8. Very Simple Structure analysis (using the vss() function in the psych package) suggested 9 factors by the BIC criterion and 12  by the sample-size adjusted BIC criterion, whereas VSS complexity criteria suggested fewer structures (4 and 6 for VSS complexity critieria 1 and 2 respectively).  Based on these analyses a dimensionality of 9 factors was chosen for exploratory factor analysis (EFA).  
+
+Three confirmatory factor analysis (CFA) models were generated based on the results from the EFA.  The first (veridical model) was generated based on the actual structure obtained from EFA applied to the full dataset; links were included for all variables with loading of at least 0.1 on each factor in the original EFA.  The second was a slight modification of the first, obtained by dropping one variable from one factor, and the third was a greater modification obtained by collapsing two factors from the original model into a single factor.  Each of these fit the data significantly worse than the veridical model (model 2: $\chi^2$= 20.13; model 3: $\chi^2$= 145.77, both $p<0.001$).
+
+
+These models are presented in Figure \ref{fig:models}.
 
 \begin{figure}[!h]
-\caption{\textbf{Clustering of the 12 variables of interest.}}
-\centering
-\includegraphics[width=0.75\linewidth]{iclust.pdf}
-\label{fig:cluster}
-\end{figure}
-
-Based on these clusters, a confirmatory factor analysis (CFA) model was created, with four latent factors, each of which was associated with three behavioral measures.  In addition, a second model was created that includes only two factors and combines across measures that should clearly be separated; this is meant to serve as a comparison model, in order to asses the ability to identify the correct model.  These models are presented in Figure \ref{fig:models}.
-
-\begin{figure}[!h]
-\caption{\textbf{Correct (left) and incorrect (right) CFA models.}}
+\caption{\textbf{Correct CFA Model 1 (left) and incorrect (CFA) models 2 (close - missing one link) and 3 (far - factors H and I combined).}}
 \centering
 \includegraphics[width=1.\linewidth]{models.pdf}
 \label{fig:models}
 \end{figure}
 
-Simulated datasets were generated by sampling subjects with replacement from the original 1126.  The base sample size for the simulations was 400 subjects, which was used for simulations with complete cases (no missing data).  Datasets with missing data were generated by sampling larger datasets and then setting a particular proportion of variables to NA for each subject; the sample size was increased in order to keep the total number of complete cells constant across simulations.  
+Simulated datasets were generated by sampling subjects with replacement from the original 1093.  The base sample size for the simulations was varied between 400 and 800 subjects (in steps of 100), which was used for simulations with complete cases (no missing data).  Datasets with missing data were generated by sampling larger datasets and then setting a particular proportion of variables to NA for each subject; the sample size was increased in order to keep the total number of non-NA cells constant across simulations.  
 
-The two CFA models were fit to each simulated dataset using the lavaan package in R. Two approaches to missing data were explored.  In the first, the missing data were imputed using two methods: predictive mean imputation with the mice package in R as well, and imputation using Amelia II. Note that in each case only a single imputed dataset was processed.  The models were then fit to each imputed dataset with no missing values.  In the second, the model was fit using full information maximum likelihood (FIML) with no imputation (which is appropriate given that the data are missing completely at random).  The primary measures of interest were root mean square approximation error (RMSEA) which is a measure of goodness of fit of the correct model, and the p-value for the model comparison between the correct and incorrect models, which was used to estimate statistical power to distinguish correct vs. incorrect models.  For each model, 1000 simulations were run for four levels of sampling (100\%, 50\%, 25\%, and 20\% of the 12 tasks present for each subject).  
+The three CFA models were fit to each simulated dataset using the lavaan package in R. We initially explored the use of imputation with the Amelia II package, but overimputation analysis showed very poor fit between imputed and actual data, so this approach was not examined in detail for the full simulations.  Instead, models were fit using full information maximum likelihood (FIML) with no imputation (which is appropriate given that the data are missing completely at random); a fairly high ridge parameter (ridge=0.1) was used to help prevent degeneracies in model fitting.  The primary measures of interest were root mean square approximation error (RMSEA) which is a measure of goodness of fit of the correct model, and the p-value for the model comparison between the correct model and two incorrect models, which was used to estimate statistical power to distinguish correct vs. incorrect models.  For each model, 500 simulations were run for multiple levels of sampling (36, 18, 9, 6, 4, and 3 of the 36 tasks present for each subject); see \url{https://github.com/poldrack/SEM_simulations/blob/master/SEM_sim2.R}.
 
 \section{Results}
 
-Results of the simulations are presented in Figure \ref{fig:results}.  An important finding was that model fitting failed regularly, with increasing rates of failure as the amount of missing data increased.  Model fitting was substantially more successful when using FIML with missing data compared to analyses using imputation.  All subsequent analyses are conditionalized upon successful model fitting.
+Results of the simulations are presented in Figure \ref{fig:results}.  An important finding was that model fitting failed regularly, with increasing rates of failure as the amount of missing data increased (Figure \ref{fig:results}C); this is likely due to ill-conditioned (non-positive definite) covariance matrices obtained from the missing data, or from small numbers of observations for particular combinations of variables.   With small sample sizes and low sampling per subject, nearly all modeling attempts were unsuccessful.  All subsequent analyses are conditionalized upon successful model fitting.
 
-Divergent results were observed between analyses using imputation and those using FIML with missing data.  Model goodness of fit increased as the degree of subsampling increased for FIML, whereas it decreased (and was much lower overall) for models using imputation.  One concern is that a substantial number of models had an RMSEA value of zero, which may suggest model degeneracy even for models that did not fail outright (Figure \ref{fig:results}D).  
+Model fit and power to detect close and far model misspecification were examined at each base sample size (400-800 in steps of 100) for each level of test sampling.  Results are presented in Figure \ref{fig:results}.  Model goodness of fit was strongly modulated by sampling (Figure \ref{fig:results}A), which likely reflects the fact that RMSEA is sensitive to sample size, and sample size increased as the number of variables sampled per individual decreased (in order to keep the number of complete cells constant).  Far model misspecfication was easily detected (not shown); for most simulations power was 100\%, and it was only for base sample size of 400 with 3 tests sampled that it fell below 80\%.  Close model misspecfication was more difficult to detect (Figure \ref{fig:results}B); for no set of simulations was power greater than 80\% to detect the misspecification of a single variable, though it approached 80\% for the simulations with all 36 variables.  Pilot analyses had identified cases where an RMSEA value of zero was returned, which presumably reflected some sort of degeneracy in model fitting.  In the present simulations this was only observed for analyses with very small numbers of variables present (Figure \ref{fig:results}D).  
 
-For model comparison, results also differed between missing data approaches. For models using imputation, there was very high power to identify the correct model even at the lowest levels of sampling; for models using FIML without imputation, power decreased as the proportion of sampled measures fell below 0.5, and fell below the nominal 80\% level at a sampling proportion of 20\%.  
 
 \begin{figure}[!h]
 \caption{\textbf{Results from simulations}}
 \centering
-\includegraphics[width=1.\linewidth]{results.pdf}
+\includegraphics[width=1.\linewidth]{results_power.pdf}
 \label{fig:results}
 \end{figure}
 
 \section{Summary}
-The foregoing results suggest that we can reasonably move to sampling a very small proportion of tasks per subject, though this decision depends on a complex set of tradeoffs between different figures of merit across the simulations.  In particular, it appears that the power to detect differences between correct and incorrect models remains high when using imputation, but is reduced when using FIML will missing data.  On the other hand, model goodness of fit was very good for FIML and increased with proportion of missing data, due to its dependence on sample size.  It appears that overall, imputation was more effective using Amelia versus MICE.  
+The foregoing results provide some guidelines regarding the sampling of measures in the proposed study.  In particular, they suggest that subsampling of individuals across measures is a reasonable approach that may help balance the logistical challenges of sampling individuals across a large number of measures.  They also provide some practical limits on this subsampling, suggesting that each individual should probably be sampled in such a way as to provide data on at least about 1/6 of the measures in the database.  One limitation of the present work is that we don't know how it will scale to an even larger set of measures like those in the proposed study; it would be possible to assess this using simulated data once the full set of variables is known.
 
-The one major remaining concern is the high degree of model fitting failure; even in the complete case simulations there was more than 10\% failure of model fitting, and this increased to almost 80\% modeling failure rate in the case with 80\% of values missing, both for FIML and for imputation using Amelia.  It would be useful to gain more insight into these failures so that we can avoid a case where our proposed models cannot be fit. 
+The results also suggest a strategy for sampling of measures; in particular, we should sample measures in such a way as to prevent substantial imbalances in the number of observations for each pairwise set of variables.  This could be achieved by randomly sampling subsets of measures for each new subject, with sampling driven by the observed frequencies in the joint histogram across measures (see Figure \ref{fig:sampling}); for an example implementation, see \url{https://github.com/poldrack/SEM_simulations/blob/master/sampsim.py}.
 
-Another open question is whether these results will extend to the case of a larger dataset like the one being proposed here, with more than 60 tasks and likely more than 150 dependent variables.  We need to devise a more specfiic plan for the analyses that will be performed on the data, so that we can better assess the impact of planned missingness.
+\begin{figure}[!h]
+\caption{Simulation of test sampling, showing that random sampling can result in some sets of measures with very low numbers of pairwise datasets (total number of tests = 70, number assigned to each subject = 12, number of subjects = 4000).  Subjects were either randomly assigned to tests (blue line), or assigned to tests by choosing the tests with the lowest joint frequencies in the histogram (green line).  The minimum cooccurrence frequency was substantially higher for the optimal sampling (103) versus the random sampling (74)}
+\centering
+\includegraphics[width=1.\linewidth]{optsample.pdf}
+\label{fig:sampling}
+\end{figure}
 
-%\subsection{}
-
+%The one major remaining concern is the high degree of model fitting failure; even in the complete case simulations there was more than 10\% failure of model fitting, and this increased to almost 80\% modeling failure rate in the case with 80\% of values missing, both for FIML and for imputation using Amelia.  It would be useful to gain more insight into these failures so that we can avoid a case where our proposed models cannot be fit. 
 
 
 \end{document}  
