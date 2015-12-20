@@ -8,9 +8,8 @@ simnum=as.numeric(args[2])
 imp=as.numeric(args[3])
 minsize=as.numeric(args[4])
 
-if (is.na(nsamp)) {nsamp=600}
 
-if (is.na(samp_prop)) {
+if (is.na(minsize)) {
    cat('no command line args given - using canned values\n')
    samp_prop=0.07
    simnum=1
@@ -19,7 +18,7 @@ if (is.na(samp_prop)) {
 }
 
 library(lavaan)
-library(matrixcalc)
+#library(matrixcalc)
 #library(gtools)
 
 c0=read.table('set1.csv',sep=',',header=TRUE,na.strings=c('NA','.'))
@@ -106,7 +105,7 @@ FH =~ asrs_score + hopkins_globalseverity + bis_factor1_ci + bis_factor2_bi + pe
 # create forms
 nforms=12
 forms=c()
-for (i in 1:9) {
+for (i in 1:nforms) {
   for (j in 1:round(36/nforms)) {
     forms=c(forms,i)
   }
@@ -247,4 +246,4 @@ cfaout_opt=runcfa(dsim_opt,cfa_model,cfa_model2,cfa_model3,impute=imp)
 output=c(samp_prop,simnum,cfaout_forms,cfaout_opt,badeig_forms,badeig_opt)
 if (imp==1) {outdir='outputs_amelia'} else {outdir='outputs_fiml'}
 
-write.table(output,file=sprintf('%s/sim_%0.3f_%d_%d.txt',outdir,samp_prop,nsamp,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
+write.table(output,file=sprintf('%s/sim_%d_%d_%d.txt',outdir,nforms_per,minsize,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
