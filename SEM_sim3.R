@@ -3,10 +3,10 @@
 # for 36 variables, use 9 forms with 4 measures each
 
 args=commandArgs(trailingOnly=TRUE)
-samp_prop=as.numeric(args[1])
+nforms_per=as.numeric(args[1])
 simnum=as.numeric(args[2])
 imp=as.numeric(args[3])
-nsamp=as.numeric(args[4])
+minsize=as.numeric(args[4])
 
 if (is.na(nsamp)) {nsamp=600}
 
@@ -15,6 +15,7 @@ if (is.na(samp_prop)) {
    samp_prop=0.07
    simnum=1
    imp=0
+   nforms_per=2
 }
 
 library(lavaan)
@@ -103,8 +104,7 @@ FH =~ asrs_score + hopkins_globalseverity + bis_factor1_ci + bis_factor2_bi + pe
 #fit3 <- cfa(cfa_model3, data =data2)
 
 # create forms
-nforms=9
-nforms_per=2
+nforms=12
 forms=c()
 for (i in 1:9) {
   for (j in 1:round(36/nforms)) {
@@ -232,7 +232,7 @@ sampdata_optimal=function(d,nsamp_sub,samp_prop) {
 
 
 
-dsim_forms=sampdata_forms(data2,100,nforms,nforms_per)
+dsim_forms=sampdata_forms(data2,minsize,nforms,nforms_per)
 dsim_opt=sampdata_optimal(data2,nrow(dsim_forms),2/9)
 
 eig_forms=eigen(cov(dsim_forms,use='pairwise.complete'))$values
