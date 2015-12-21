@@ -243,7 +243,7 @@ badeig_opt=(sum(is.na(eig_opt))+sum(eig_opt<=0))/length(eig_opt)
 cfaout_forms=runcfa(dsim_forms,cfa_model,cfa_model2,cfa_model3,impute=imp)
 cfaout_opt=runcfa(dsim_opt,cfa_model,cfa_model2,cfa_model3,impute=imp)
 
-output=c(samp_prop,simnum,cfaout_forms,cfaout_opt,badeig_forms,badeig_opt)
+output=c(nforms_per,minsize,simnum,cfaout_forms,cfaout_opt,badeig_forms,badeig_opt)
 if (imp==1) {outdir='outputs_amelia'} else {outdir='outputs_fiml'}
 
 write.table(output,file=sprintf('%s/sim_%d_%d_%d.txt',outdir,nforms_per,minsize,simnum),row.names=FALSE,col.names=FALSE,quote=FALSE)
